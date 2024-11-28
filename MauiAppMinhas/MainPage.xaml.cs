@@ -1,4 +1,4 @@
-﻿namespace MauiAppMinhas
+﻿namespace MauiAppMinhasCompras
 {
     public partial class MainPage : ContentPage
     {
