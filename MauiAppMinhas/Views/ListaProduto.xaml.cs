@@ -1,32 +1,34 @@
-﻿using MauiAppMinhasCompras.Models;
+﻿
+using MauiAppMinhas.Models;
 using System.Collections.ObjectModel;
 
-namespace MauiAppMinhasCompras.Views;
+namespace MauiAppMyShopping.Views;
 
-public partial class ListaProduto : ContentPage
+public partial class ProductList : ContentPage
 {
-    ObservableCollection<Produto> lista = new ObservableCollection<Produto>();
+    ObservableCollection<Product> list = new ObservableCollection<Product>();
 
-    public ListaProduto()
+    public ProductList()
     {
         InitializeComponent();
 
-        lst_produtos.ItemsSource = lista;
+        ListaProduto.ItemsSource = list;
     }
 
     protected async override void OnAppearing()
     {
         try
         {
-            lista.Clear();
+            list.Clear(); // It clears the list view every time we go back to the window
 
-            List<Produto> tmp = await App.Db.GetAll();
+            List<Product> temporaryList = await App.Database.GetAll();
 
-            tmp.ForEach(i => lista.Add(i));
+            temporaryList.ForEach(x => list.Add(x));
+
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Ops", ex.Message, "OK");
+            await DisplayAlert("OPS!", ex.Message, "OK");
         }
     }
 
@@ -35,78 +37,91 @@ public partial class ListaProduto : ContentPage
         try
         {
             Navigation.PushAsync(new Views.NovoProduto());
-
         }
         catch (Exception ex)
         {
-            DisplayAlert("Ops", ex.Message, "OK");
+            DisplayAlert("OPS!", ex.Message, "Exit");
         }
     }
 
-    private async void txt_search_TextChanged(object sender, TextChangedEventArgs e)
+    private async void searchTxt_TextChanged(object sender, TextChangedEventArgs e)
     {
         try
         {
-            string q = e.NewTextValue;
+            string query = e.NewTextValue;
 
-            lista.Clear();
+            list.Clear();
 
-            List<Produto> tmp = await App.Db.Search(q);
+            List<Product> temporaryList = await App.Database.Search(query);
 
-            tmp.ForEach(i => lista.Add(i));
+            temporaryList.ForEach(x => list.Add(x));
+
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Ops", ex.Message, "OK");
+            await DisplayAlert("OPS!", ex.Message, "OK");
         }
     }
 
     private void ToolbarItem_Clicked_1(object sender, EventArgs e)
     {
-        double soma = lista.Sum(i => i.Total);
-
-        string msg = $"O total � {soma:C}";
-
-        DisplayAlert("Total dos Produtos", msg, "OK");
-    }
-
-    private async void MenuItem_Clicked(object sender, EventArgs e)
-    {
         try
         {
-            MenuItem selecinado = sender as MenuItem;
+            double total = list.Sum(x => x.Total);
 
-            Produto p = selecinado.BindingContext as Produto;
+            string message = $"The total price is {total:c}";
 
-            bool confirm = await DisplayAlert(
-                "Tem Certeza?", $"Remover {p.Descricao}?", "Sim", "N�o");
+            DisplayAlert("My order", message, "OK");
+
+        }
+        catch (Exception ex)
+        {
+            DisplayAlert("OPS!", ex.Message, "OK");
+        }
+    }
+
+    // Delete product
+    private async void MenuItem_Clicked(object sender, EventArgs e)
+    {
+
+        try
+        {
+            MenuItem selectedMenuItem = sender as MenuItem;
+
+            Product product = selectedMenuItem.BindingContext as Product;
+
+            bool confirm = await DisplayAlert("Warning!", $"Do you really want to exclude this product? ({product.Description})",
+                "Yes", "No");
 
             if (confirm)
             {
-                await App.Db.Delete(p.Id);
-                lista.Remove(p);
+                await App.Database.Delete(product.Id);
+                list.Remove(product);
             }
+
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Ops", ex.Message, "OK");
+            await DisplayAlert("OPS!", ex.Message, "OK");
         }
     }
 
-    private void lst_produtos_ItemSelected(object sender, SelectedItemChangedEventArgs e)
+    // Edit product
+    private void ListaProduto_ItemSelected(object sender, SelectedItemChangedEventArgs e)
     {
         try
         {
-            Produto p = e.SelectedItem as Produto;
+            Product product = e.SelectedItem as Product;
 
             Navigation.PushAsync(new Views.EditarProduto
             {
-                BindingContext = p,
+                BindingContext = product
             });
+
         }
         catch (Exception ex)
         {
-            DisplayAlert("Ops", ex.Message, "OK");
+            DisplayAlert("OPS!", ex.Message, "OK");
         }
     }
 }

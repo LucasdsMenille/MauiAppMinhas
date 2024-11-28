@@ -1,6 +1,6 @@
-using MauiAppMinhasCompras.Models;
+using MauiAppMinhas.Models;
 
-namespace MauiAppMinhasCompras.Views;
+namespace MauiAppMinhas.Views;
 
 public partial class NovoProduto : ContentPage
 {
@@ -13,7 +13,7 @@ public partial class NovoProduto : ContentPage
     {
         try
         {
-            Produto p = new Produto
+            Product p = new Product
             {
                 Descricao = txt_descricao.Text,
                 Quantidade = Convert.ToDouble(txt_quantidade.Text),

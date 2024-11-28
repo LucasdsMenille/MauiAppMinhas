@@ -1,8 +1,8 @@
-using MauiAppMinhasCompras.Models;
+using MauiAppMyShopping.Models;
 
-namespace MauiAppMinhasCompras.Views;
+namespace MauiAppMinhas.Views;
 
-public partial class EditarProduto : ContentPage
+public partial class EditProduct : ContentPage
 {
     public EditarProduto()
     {
@@ -13,23 +13,26 @@ public partial class EditarProduto : ContentPage
     {
         try
         {
-            Produto produto_anexado = BindingContext as Produto;
+            Product anexedProduct = BindingContext as Product;
 
-            Produto p = new Produto
+            object productDescriptionTxt = null;
+            Product product = new Product
             {
-                Id = produto_anexado.Id,
-                Descricao = txt_descricao.Text,
-                Quantidade = Convert.ToDouble(txt_quantidade.Text),
-                Preco = Convert.ToDouble(txt_preco.Text)
+                Id = anexedProduct.Id,
+                Description = productDescriptionTxt.Text,
+                Amount = Convert.ToInt16(productAmountTxt.Text),
+                Price = Convert.ToDouble(productUnitPrice.Text)
             };
 
-            await App.Db.Update(p);
-            await DisplayAlert("Sucesso!", "Registro Atualizado", "OK");
+            await App.Database.Update(product);
+
+            await DisplayAlert("Updated", "Success", "OK");
+
             await Navigation.PopAsync();
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Ops", ex.Message, "OK");
+            await DisplayAlert("OPS!", ex.Message, "OK");
         }
     }
 }

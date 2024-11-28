@@ -1,28 +1,28 @@
 ﻿using SQLite;
 
-namespace MauiAppMinhasCompras.Models
+namespace MauiAppMinhas.Models
 {
-    public class Produto
+    public class Product
     {
-        string _descricao;
+        string _description;
 
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
-        public string Descricao
+        public string? Description
         {
-            get => _descricao;
+            get => _description;
             set
             {
                 if (value == null)
                 {
-                    throw new Exception("Por favor, preencha a descrição");
+                    throw new Exception("Please, fill the fields");
                 }
 
-                _descricao = value;
+                _description = value;
             }
         }
-        public double Quantidade { get; set; }
-        public double Preco { get; set; }
-        public double Total { get => Quantidade * Preco; }
+        public int Amount { get; set; }
+        public double Price { get; set; }
+        public double Total { get => Convert.ToDouble(Amount) * Price; }
     }
 }

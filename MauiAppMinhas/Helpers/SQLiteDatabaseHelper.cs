@@ -1,47 +1,54 @@
-﻿using MauiAppMinhasCompras.Models;
+﻿using MauiAppMinhas.Models;
 using SQLite;
 
-namespace MauiAppMinhasCompras.Helpers
+
+namespace MauiAppMinhas.Helpers
 {
     public class SQLiteDatabaseHelper
     {
-        readonly SQLiteAsyncConnection _conn;
+        readonly SQLiteAsyncConnection _connection;
 
+        // Constructor
         public SQLiteDatabaseHelper(string path)
         {
-            _conn = new SQLiteAsyncConnection(path);
-            _conn.CreateTableAsync<Produto>().Wait();
+            _connection = new SQLiteAsyncConnection(path);
+            _connection.CreateTableAsync<Product>().Wait();
         }
 
-        public Task<int> Insert(Produto p)
+        // Create method
+        public Task<int> Create(Product product)
         {
-            return _conn.InsertAsync(p);
+            return _connection.InsertAsync(product);
         }
 
-        public Task<List<Produto>> Update(Produto p)
+        // Update method
+        public Task<List<Product>> Update(Product product)
         {
-            string sql = "UPDATE Produto SET Descricao=?, Quantidade=?, Preco=? WHERE Id=?";
+            string SQL = "UPDATE Product SET Description=?, Amount=?, Price=? WHERE Id=?";
 
-            return _conn.QueryAsync<Produto>(
-                sql, p.Descricao, p.Quantidade, p.Preco, p.Id
-            );
+            return _connection.QueryAsync<Product>(
+                SQL, product.Description, product.Amount, product.Price, product.Id
+                );
         }
 
+        // Delete method
         public Task<int> Delete(int id)
         {
-            return _conn.Table<Produto>().DeleteAsync(i => i.Id == id);
+            return _connection.Table<Product>().DeleteAsync(i => i.Id == id);
         }
 
-        public Task<List<Produto>> GetAll()
+        // Getting all products
+        public Task<List<Product>> GetAll()
         {
-            return _conn.Table<Produto>().ToListAsync();
+            return _connection.Table<Product>().ToListAsync();
         }
 
-        public Task<List<Produto>> Search(string q)
+        // Search products
+        public Task<List<Product>> Search(string query)
         {
-            string sql = "SELECT * FROM Produto WHERE descricao LIKE '%" + q + "%'";
+            string SQL = $"SELECT * FROM Product WHERE Description LIKE '%{query}%' ";
 
-            return _conn.QueryAsync<Produto>(sql);
+            return _connection.QueryAsync<Product>(SQL);
         }
     }
 }
